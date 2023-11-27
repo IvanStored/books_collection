@@ -142,4 +142,5 @@ fabric.properties
 pgdata/
 .env
 .idea/
+*.pyc
 # End of https://www.toptal.com/developers/gitignore/api/pycharm,linux,database

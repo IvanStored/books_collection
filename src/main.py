@@ -1,18 +1,34 @@
-import loguru
 import uvicorn
 from fastapi import FastAPI
-from src.config import settings
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
+from fastapi.requests import Request
+from starlette import status
 
-from src.routers.auth import user_router
+
+from src.routers.auth import auth_router
 
 app = FastAPI()
 
-app.include_router(user_router)
+app.include_router(auth_router)
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
-async def root():
-    return {"message": settings.DB_HOST, "rul": settings.DB_NAME}
+async def root(request: Request):
+    return RedirectResponse(
+        url=request.url_for("login_page"),
+        status_code=status.HTTP_303_SEE_OTHER,
+    )
 
 
 @app.get("/hello/{name}")

@@ -1,6 +1,6 @@
-from dotenv import load_dotenv, find_dotenv
-from pydantic import Field
+from dotenv import find_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from fastapi.templating import Jinja2Templates
 
 
 class DataBaseSettings(BaseSettings):
@@ -17,3 +17,5 @@ class DataBaseSettings(BaseSettings):
 
 
 settings = DataBaseSettings()
+
+templates = Jinja2Templates(directory="../templates")
