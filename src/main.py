@@ -7,10 +7,12 @@ from starlette import status
 
 
 from src.routers.auth import auth_router
+from src.routers.book import books_router
 
 app = FastAPI()
 
 app.include_router(auth_router)
+app.include_router(books_router)
 
 origins = ["*"]
 

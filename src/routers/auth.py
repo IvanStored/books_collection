@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request, Depends
 from fastapi_users import FastAPIUsers
 from starlette import status
 from starlette.responses import RedirectResponse
-from starlette.templating import _TemplateResponse # noqa
+from starlette.templating import _TemplateResponse  # noqa
 
 from src.config import templates
 from src.managers.user import (
