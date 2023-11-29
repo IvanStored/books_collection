@@ -1,4 +1,4 @@
-"""add book model for test scraper
+"""add book model for test utils
 
 Revision ID: 884548465ac4
 Revises: b8908d6b76f0

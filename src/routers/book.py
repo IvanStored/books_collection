@@ -1,14 +1,56 @@
-from fastapi import APIRouter, HTTPException
+import uuid
+from fastapi import APIRouter, Depends
+from starlette import status
 
-from src.schemas.book import BookRead
-from src.scraper.scraper import scraper
+from src.schemas.book import BookRead, BookList, BookUpdate
+from src.services.book_service import BookService
+from src.utils.dependencies import get_book_service, current_user
 
-books_router = APIRouter(prefix="/books", tags=["books"])
+books_router = APIRouter(
+    prefix="/books", tags=["books"], dependencies=[Depends(current_user)]
+)
 
 
-@books_router.get("/find_book/{isbn_number}", response_model=BookRead)
-async def find_book(isbn_number: int):
-    book = scraper.find_book(isbn_number=isbn_number)
-    if not book:
-        raise HTTPException(status_code=404, detail="Item not found")
-    return BookRead(**book)
+@books_router.post("/add_book/{isbn_number}", response_model=BookRead)
+async def add_book(
+    isbn_number: int, service: BookService = Depends(get_book_service)
+):
+    return await service.add_new_book(isbn_number=isbn_number)
+
+
+@books_router.get("/get_by_uuid/{uuid}", response_model=BookRead)
+async def get_book_by_uuid(
+    uuid_: uuid.UUID,
+    service: BookService = Depends(get_book_service),
+):
+    return await service.get_one_by_uuid(uuid_number=uuid_)
+
+
+@books_router.get(
+    "/all_books",
+    response_model=BookList,
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Missing token or inactive user.",
+        },
+    },
+)
+async def get_all_books(service: BookService = Depends(get_book_service)):
+    return {"books": await service.get_all_books()}
+
+
+@books_router.patch("/update_book/{uuid_}", response_model=BookRead)
+async def update_book(
+    uuid_: uuid.UUID,
+    new_data: BookUpdate,
+    service: BookService = Depends(get_book_service),
+):
+    return await service.update_book(uuid_number=uuid_, new_data=new_data)
+
+
+@books_router.delete("/delete_book/{uuid_}", response_model=BookRead)
+async def delete_book(
+    uuid_: uuid.UUID,
+    service: BookService = Depends(get_book_service),
+):
+    return await service.delete_book(uuid_number=uuid_)
