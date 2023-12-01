@@ -18,7 +18,8 @@ books_router = APIRouter(
 async def add_book(
     isbn_number: int, service: BookService = Depends(get_book_service)
 ):
-    return await service.add_new_book(isbn_number=isbn_number)
+    book = await service.add_new_book(isbn_number=isbn_number)
+    return BookRead(**book.__dict__)
 
 
 @books_router.get("/get_by_uuid/{uuid}", response_model=BookRead)
@@ -26,7 +27,8 @@ async def get_book_by_uuid(
     uuid_: uuid.UUID,
     service: BookService = Depends(get_book_service),
 ):
-    return await service.get_one_by_uuid(uuid_number=uuid_)
+    book = await service.get_one_by_uuid(uuid_number=uuid_)
+    return BookRead(**book.__dict__)
 
 
 @books_router.get(
@@ -34,7 +36,9 @@ async def get_book_by_uuid(
     response_model=BookList,
 )
 async def get_all_books(service: BookService = Depends(get_book_service)):
-    return {"books": await service.get_all_books()}
+    books = await service.get_all_books()
+    books = [BookRead(**book.__dict__) for book in books]
+    return BookList(books=books)
 
 
 @books_router.patch("/update_book/{uuid_}", response_model=BookRead)
@@ -43,9 +47,10 @@ async def update_book(
     new_data: BookUpdate,
     service: BookService = Depends(get_book_service),
 ):
-    return await service.update_book(
+    book = await service.update_book(
         uuid_number=uuid_, new_data=new_data.model_dump(exclude_none=True)
     )
+    return BookRead(**book.__dict__)
 
 
 @books_router.delete("/delete_book/{uuid_}", response_model=BookRead)
@@ -53,4 +58,5 @@ async def delete_book(
     uuid_: uuid.UUID,
     service: BookService = Depends(get_book_service),
 ):
-    return await service.delete_book(uuid_number=uuid_)
+    book = await service.delete_book(uuid_number=uuid_)
+    return BookRead(**book.__dict__)
