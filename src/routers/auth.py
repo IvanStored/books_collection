@@ -6,7 +6,7 @@ from starlette.templating import _TemplateResponse  # noqa
 from src.config import templates
 
 from src.models.user import User
-from src.schemas.user import UserRead, UserCreate, UserUpdate
+from src.schemas.user import UserRead, UserCreate
 from src.utils.dependencies import current_user, fastapi_users, auth_backend
 
 auth_router = APIRouter()
@@ -42,11 +42,6 @@ auth_router.include_router(
     fastapi_users.get_auth_router(auth_backend),
     prefix="/auth/jwt",
     tags=["auth"],
-)
-auth_router.include_router(
-    fastapi_users.get_users_router(UserRead, UserUpdate),
-    prefix="/users",
-    tags=["users"],
 )
 
 auth_router.include_router(

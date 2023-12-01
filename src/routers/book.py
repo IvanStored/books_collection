@@ -3,10 +3,14 @@ from fastapi import APIRouter, Depends
 
 from src.schemas.book import BookRead, BookList, BookUpdate
 from src.services.book_service import BookService
-from src.utils.dependencies import get_book_service, current_user
+
+from src.utils.dependencies import (
+    get_book_service,
+    super_user,
+)
 
 books_router = APIRouter(
-    prefix="/books", tags=["books"], dependencies=[Depends(current_user)]
+    prefix="/books", tags=["books"], dependencies=[Depends(super_user)]
 )
 
 
@@ -39,7 +43,9 @@ async def update_book(
     new_data: BookUpdate,
     service: BookService = Depends(get_book_service),
 ):
-    return await service.update_book(uuid_number=uuid_, new_data=new_data)
+    return await service.update_book(
+        uuid_number=uuid_, new_data=new_data.model_dump(exclude_none=True)
+    )
 
 
 @books_router.delete("/delete_book/{uuid_}", response_model=BookRead)

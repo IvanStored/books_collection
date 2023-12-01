@@ -1,9 +1,10 @@
 from datetime import datetime
 
 from sqlalchemy import String, Integer, BigInteger
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import BaseModel
+from src.models.user import book_users_association
 
 
 class Book(BaseModel):
@@ -23,3 +24,10 @@ class Book(BaseModel):
     cover: Mapped[str] = mapped_column(nullable=True, default=None)
 
     isbn_number: Mapped[int] = mapped_column(BigInteger, nullable=False)
+
+    users: Mapped[list] = relationship(
+        "User",
+        secondary=book_users_association,
+        back_populates="books",
+        lazy="selectin",
+    )

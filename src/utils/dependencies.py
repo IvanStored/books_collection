@@ -16,11 +16,18 @@ from src.managers.book_manager import BookManager
 from src.managers.user import UserManager
 from src.models.user import User
 from src.services.book_service import BookService
+from src.services.user_service import UserService
 
 
 def get_book_service(session: AsyncSession = Depends(get_async_session)):
     manager = BookManager(session=session)
     return BookService(book_manager=manager)
+
+
+def get_user_service(session: AsyncSession = Depends(get_async_session)):
+    manager = UserManager(user_db=get_user_db())
+    manager.session = session
+    return UserService(user_manager=manager)
 
 
 async def get_user_manager(
@@ -46,3 +53,4 @@ fastapi_users = FastAPIUsers[User, uuid.UUID](get_user_manager, [auth_backend])
 
 
 current_user = fastapi_users.authenticator.current_user(active=True)
+super_user = fastapi_users.authenticator.current_user(superuser=True)
