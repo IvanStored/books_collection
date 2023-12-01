@@ -14,8 +14,6 @@ class BookService:
         return await self.manager.add(book)
 
     async def update_book(self, uuid_number: UUID, new_data: BookUpdate):
-        if not any([bool(value) for value in new_data.__dict__.values()]):
-            return await self.manager.get_by_uuid(uuid_=uuid_number)
         return await self.manager.update(uuid_=uuid_number, new_data=new_data)
 
     async def delete_book(self, uuid_number: UUID):

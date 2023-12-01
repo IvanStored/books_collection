@@ -19,3 +19,5 @@ class DataBaseSettings(BaseSettings):
 settings = DataBaseSettings()
 
 templates = Jinja2Templates(directory="../templates")
+
+SECRET = "SECRET"  # ToDo : change maybe

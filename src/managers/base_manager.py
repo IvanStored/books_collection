@@ -1,6 +1,5 @@
 import uuid
 
-from pydantic import BaseModel
 from sqlalchemy import insert, select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -24,11 +23,9 @@ class BaseManager:
 
         return res.scalars().all()
 
-    async def add(self, instance_data: BaseModel):
+    async def add(self, instance_data: dict):
         query = (
-            insert(self.model)
-            .values(**instance_data.__dict__)
-            .returning(self.model)
+            insert(self.model).values(**instance_data).returning(self.model)
         )
         res = await self.session.execute(statement=query)
         return res.scalar_one()
@@ -37,7 +34,7 @@ class BaseManager:
         query = (
             update(self.model)
             .where(self.model.id == uuid_)
-            .values(**new_data.__dict__)
+            .values(new_data.model_dump(exclude_none=True))
             .returning(self.model)
         )
 

@@ -1,6 +1,5 @@
 import uuid
 from fastapi import APIRouter, Depends
-from starlette import status
 
 from src.schemas.book import BookRead, BookList, BookUpdate
 from src.services.book_service import BookService
@@ -29,11 +28,6 @@ async def get_book_by_uuid(
 @books_router.get(
     "/all_books",
     response_model=BookList,
-    responses={
-        status.HTTP_401_UNAUTHORIZED: {
-            "description": "Missing token or inactive user.",
-        },
-    },
 )
 async def get_all_books(service: BookService = Depends(get_book_service)):
     return {"books": await service.get_all_books()}

@@ -1,24 +1,14 @@
-import uuid
-
 from fastapi import APIRouter, Request, Depends
-from fastapi_users import FastAPIUsers
 from starlette import status
 from starlette.responses import RedirectResponse
 from starlette.templating import _TemplateResponse  # noqa
 
 from src.config import templates
-from src.managers.user import (
-    get_user_manager,
-    auth_backend,
-    current_active_user,
-)
+
 from src.models.user import User
 from src.schemas.user import UserRead, UserCreate, UserUpdate
+from src.utils.dependencies import current_user, fastapi_users, auth_backend
 
-fastapi_users = FastAPIUsers[User, uuid.UUID](
-    get_user_manager,
-    [auth_backend],
-)
 auth_router = APIRouter()
 
 
@@ -31,7 +21,7 @@ async def login_page(request: Request) -> _TemplateResponse:
 
 @auth_router.get("/index", response_model=None)
 async def main_page(
-    request: Request, user: User = Depends(current_active_user)
+    request: Request, user: User = Depends(current_user)
 ) -> _TemplateResponse | RedirectResponse:
     if not user:
         return RedirectResponse(

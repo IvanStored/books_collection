@@ -16,7 +16,7 @@ class Scraper:
     BASE_URL = "https://www.goodreads.com/search?query="
     SCRIPT_TAG = "script#__NEXT_DATA__"
 
-    def find_book(self, isbn_number: int) -> BookBase:
+    def find_book(self, isbn_number: int) -> dict:
         response = requests.get(url=self.BASE_URL + str(isbn_number))
         soup = BeautifulSoup(response.text, "html.parser")
         json_string = soup.select_one(self.SCRIPT_TAG)
@@ -25,7 +25,10 @@ class Scraper:
                 status_code=status.HTTP_404_NOT_FOUND, detail="Book not found"
             )
         json_dict = json.loads(json_string.text)
-        return self.__parse_json(json_dict=json_dict, isbn_number=isbn_number)
+        book_data = self.__parse_json(
+            json_dict=json_dict, isbn_number=isbn_number
+        )
+        return book_data
 
     @staticmethod
     def __parse_json(json_dict: dict, isbn_number: int):
@@ -65,7 +68,7 @@ class Scraper:
             "isbn_number": isbn_number,
         }
 
-        return BookBase(**book_dict)
+        return book_dict
 
 
 scraper = Scraper()
