@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Request, Depends
 from starlette import status
-from starlette.responses import RedirectResponse
-from starlette.templating import _TemplateResponse  # noqa
+from starlette.responses import RedirectResponse, HTMLResponse
 
 from src.config import templates
 
@@ -13,16 +12,23 @@ auth_router = APIRouter()
 
 
 @auth_router.get("/login")
-async def login_page(request: Request) -> _TemplateResponse:
+async def login_page(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(
         "index.html", context={"request": request}
+    )
+
+
+@auth_router.get("/register_page")
+async def register_page(request: Request) -> HTMLResponse:
+    return templates.TemplateResponse(
+        "register_page.html", context={"request": request}
     )
 
 
 @auth_router.get("/index", response_model=None)
 async def main_page(
     request: Request, user: User = Depends(current_user)
-) -> _TemplateResponse | RedirectResponse:
+) -> HTMLResponse | RedirectResponse:
     if not user:
         return RedirectResponse(
             url=request.url_for("login_page"),

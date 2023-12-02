@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<script>
+function myFunction(email, password) {
+    console.log(email);
+    console.log(password);
+  const loginUrl = "{{url_for('register:register')}}";
+  const data = {
+                "email": email,
+                "password": password
+                }
+  const loginOptions = {
+    method: 'POST',
+    headers: {
+      'accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  };
+
+  fetch(loginUrl, loginOptions)
+    .then(response => {
+      if (response.status === 422){
+          console.log(data)
+          console.log(response.json())
+          document.getElementById("error-message").innerText = response.json()
+      }
+      else if (response.status === 400){
+          document.getElementById("error-message").innerText = "400"
+      }
+      else
+          window.location.href = '{{url_for("login_page")}}';
+    });
+}
+
+</script>
+    <form id="form">
+  <div class="mb-3">
+    <label for="exampleInputEmail1" class="form-label">Email address</label>
+    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+  </div>
+  <div class="mb-3">
+    <label for="exampleInputPassword1" class="form-label">Password</label>
+    <input type="password" class="form-control" id="exampleInputPassword1">
+  </div>
+</form>
+  <button type="submit" class="btn btn-primary", onclick="myFunction(document.getElementById('exampleInputEmail1').value, document.getElementById('exampleInputPassword1').value)">Register</button>
+<div id="error-message" style="color: red;"></div>
+{% endblock %}
