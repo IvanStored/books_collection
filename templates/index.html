@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<script>
+function myFunction(email, password) {
+    console.log(email);
+    console.log(password);
+  const loginUrl = "{{url_for('auth:cookie.login')}}";
+  const loginOptions = {
+    method: 'POST',
+    headers: {
+      'accept': 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: `grant_type=&username=${email}&password=${password}&scope=&client_id=&client_secret=`,
+  };
+
+  fetch(loginUrl, loginOptions)
+    .then(response => {
+      if (response.status === 422){
+          document.getElementById("error-message").innerText = "422"
+      }
+      else if (response.status === 400){
+          document.getElementById("error-message").innerText = "400"
+      }
+      else
+      // Redirect to another page after successful login and fetching user data
+          window.location.href = '{{url_for("main_page")}}';
+    });
+}
+
+</script>
+
+    <form id="form">
+  <div class="mb-3">
+    <label for="exampleInputEmail1" class="form-label">Email address</label>
+    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+  </div>
+  <div class="mb-3">
+    <label for="exampleInputPassword1" class="form-label">Password</label>
+    <input type="password" class="form-control" id="exampleInputPassword1">
+  </div>
+</form>
+  <button type="submit" class="btn btn-primary", onclick="myFunction(document.getElementById('exampleInputEmail1').value, document.getElementById('exampleInputPassword1').value)">Submit</button>
+<div id="error-message" style="color: red;"></div>
+{% endblock %}
