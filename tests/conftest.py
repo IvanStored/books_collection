@@ -59,3 +59,16 @@ client = TestClient(app)
 async def ac() -> AsyncGenerator[AsyncClient, None]:
     async with AsyncClient(app=app, base_url="http://127.0.0.1") as ac:
         yield ac
+
+
+@pytest.fixture(scope="session")
+async def get_test_session():
+    connection = await engine_test.connect()
+    transaction = await connection.begin()
+    async_session_maker.configure(bind=connection)
+
+    async with async_session_maker() as session:
+        yield session
+
+    await transaction.rollback()
+    await connection.close()

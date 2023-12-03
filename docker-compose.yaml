@@ -4,13 +4,11 @@ version: "3.8"
 services:
   test_db:
     image: postgres:latest
-    volumes:
-      - ./pgdata:/var/lib/postgresql/data
     env_file:
       - ".env"
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_USER: ${DB_TEST_USER}
+      POSTGRES_PASSWORD: ${DB_TEST_PASS}
       POSTGRES_DB: ${DB_TEST_NAME}
     ports:
       - ${DB_TEST_PORT}:5432
